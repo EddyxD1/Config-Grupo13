@@ -11,3 +11,5 @@ Configuración centralizada para los microservicios. Cada archivo `<nombre-del-s
 - `WEATHER_API_KEY`
 
 Configure estas variables en el entorno de cada servicio antes de arrancarlo. No publique sus valores en este repositorio.
+
+Nota: `JWT_SECRET` está preparado en `auth-service.yml`, pero el código actual de `auth-service` y `gateway-service` todavía usa una clave fija. Esa integración se hará al trabajar esos módulos.
