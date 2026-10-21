@@ -1,0 +1,82 @@
+spring:
+  application:
+    name: weather-service
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/geocoordinates_db?useSSL=false&serverTimezone=UTC&createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
+    username: ${WEATHER_DB_USERNAME}
+    password: ${WEATHER_DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+
+server:
+  port: 8083
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+
+weather:
+  api:
+    base-url: https://api.openweathermap.org/data/2.5
+    api-key: ${WEATHER_API_KEY}
+    timeout: 5000
+    default-units: metric
+    default-lang: es
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      weatherApi:
+        registerHealthIndicator: true
+        slidingWindowSize: 10
+        minimumNumberOfCalls: 5
+        permittedNumberOfCallsInHalfOpenState: 3
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 10s
+        failureRateThreshold: 50
+
+  retry:
+    instances:
+      weatherApi:
+        maxAttempts: 3
+        waitDuration: 1s
+
+  timelimiter:
+    instances:
+      weatherApi:
+        timeoutDuration: 5s
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,circuitbreakers
+  endpoint:
+    health:
+      show-details: always
+  health:
+    circuitbreakers:
+      enabled: true
+
+logging:
+  level:
+    root: INFO
+    com.cibertec: INFO
+    org.springframework.web.client: DEBUG
+
+# DIME SI ESTA BIEN EL ORDEN
