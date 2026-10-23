@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: config-service
+
+  cloud:
+    config:
+      server:
+        git:
+          uri: ${CONFIG_GIT_URI:https://github.com/EddyxD1/Config-Grupo13.git}
+          default-label: ${CONFIG_GIT_BRANCH:main}
+          clone-on-start: true
+          timeout: 10
+server:
+  port: 8888
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,refresh
+  endpoint:
+    health:
+      show-details: always
+
+logging:
+  level:
+    org.springframework.cloud.config: INFO
+
+
